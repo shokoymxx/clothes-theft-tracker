@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clothes Theft Investigation Unit</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream:   #FDF8F2;
+    --gold:    #FFC567;
+    --green:   #00995E;
+    --pink:    #FB7DA8;
+    --red:     #FD5A46;
+    --blue:    #058CD7;
+    --ink:     #1A1A1A;
+    --mid:     #7A7060;
+    --grid:    rgba(120,110,90,0.07);
+    --shadow:  3px 3px 0 var(--ink);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: #EDE8DF;
+    font-family: 'Space Mono', monospace;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 24px 16px 80px;
+  }
+
+  /* ── OUTER FRAME ── */
+  .window {
+    max-width: 680px;
+    margin: 0 auto;
+    border: 3px solid var(--ink);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 5px 5px 0 var(--ink);
+    animation: popIn 0.4s cubic-bezier(.22,.68,0,1.2) both;
+  }
+
+  /* ── TOP BAR ── */
+  .top-bar {
+    background: var(--green);
+    border-bottom: 3px solid var(--ink);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .win-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,0,0,0.25);
+    flex-shrink: 0;
+  }
+  .top-bar-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.5px;
+    margin-left: 4px;
+    opacity: 0.9;
+  }
+  .top-badge {
+    background: var(--red);
+    color: white;
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1.5px solid var(--ink);
+    letter-spacing: 1px;
+  }
+
+  /* ── PAGE BODY ── */
+  .page {
+    background: var(--cream);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+    padding: 22px 22px 36px;
+  }
+
+  /* ── TITLE BLOCK ── */
+  .title-block {
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 2.5px solid var(--ink);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .title-text {}
+
+  .title-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 10px;
+  }
+
+  .title-main {
+    font-family: 'VT323', monospace;
+    font-size: clamp(38px, 9vw, 56px);
+    line-height: 0.95;
+    color: var(--ink);
+    letter-spacing: 1px;
+  }
+
+  .title-main .highlight {
+    color: var(--red);
+    display: inline-block;
+    background: var(--gold);
+    padding: 0 4px;
+  }
+
+  .title-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--mid);
+    margin-top: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ── MUGSHOT ROW ── */
+  .mugshot-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: stretch;
+  }
+
+  .photo-box {
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    background: white;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer; min-height: 120px;
+    position: relative; overflow: hidden;
+    padding: 6px 6px 20px;
+    box-shadow: var(--shadow);
+    transition: opacity 0.15s;
+  }
+  .photo-box:hover { opacity: 0.85; }
+  .photo-ph {
+    font-family: 'VT323', monospace;
+    font-size: 16px; color: var(--mid);
+    text-align: center; line-height: 1.8;
+  }
+  .photo-box img {
+    width:100%; height:100%; object-fit:cover;
+    position:absolute; inset:0 0 18px 0; display:none;
+  }
+  .photo-label {
+    position: absolute; bottom: 5px;
+    font-family: 'Space Mono', monospace; font-weight: 700;
+    font-size: 6px; letter-spacing: 1px;
+    color: var(--mid); text-transform: uppercase;
+  }
+
+  .meta-card {
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 14px;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+    justify-content: center; gap: 6px;
+  }
+
+  .meta-row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 11px;
+  }
+  .meta-key {
+    font-size: 8px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--mid);
+    min-width: 52px;
+  }
+  .meta-val { font-weight: 700; font-size: 11px; }
+  .meta-val.danger {
+    background: var(--red); color: white;
+    padding: 1px 8px; border-radius: 4px;
+    border: 1.5px solid var(--ink); font-size: 9px;
+    font-weight: 700;
+  }
+
+  .verdict-box {
+    margin-top: 6px;
+    padding: 8px 12px;
+    background: var(--ink);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: white;
+    line-height: 1.6;
+  }
+  .verdict-box::before { content: '> '; color: var(--red); }
+
+  /* ── STATS ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  .stat-box {
+    padding: 16px 8px;
+    text-align: center;
+    background: white;
+    border-right: 2px solid var(--ink);
+  }
+  .stat-box:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'VT323', monospace;
+    font-size: 64px; line-height: 1;
+    color: var(--ink); display: block; margin-bottom: 4px;
+  }
+  .stat-lbl {
+    font-family: 'Space Mono', monospace; font-weight: 700;
+    font-size: 6px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--mid);
+  }
+
+  /* ── LOG CARD ── */
+  .log-card {
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .card-title {
+    font-family: 'Space Mono', monospace; font-weight: 700;
+    font-size: 8px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--ink);
+    margin-bottom: 12px;
+  }
+
+  .label-grid-wrap {
+    overflow-x: auto;
+    margin-bottom: 14px;
+    padding-bottom: 4px;
+  }
+  .label-grid {
+    display: flex; flex-wrap: nowrap;
+    gap: 5px;
+    overflow: visible;
+    padding: 3px 3px 4px 3px;
+  }
+  .l-btn {
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 2px 2px 0 var(--ink);
+    transition: all 0.1s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .l-btn:hover { background: white; transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--ink); }
+  .l-btn.sel {
+    background: var(--gold);
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+
+  .add-row { display: flex; gap: 8px; }
+  .text-inp {
+    flex: 1;
+    border: 2px solid var(--ink);
+    border-radius: 7px;
+    background: var(--cream);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; padding: 9px 11px;
+    color: var(--ink); outline: none;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .text-inp::placeholder { color: var(--mid); }
+  .text-inp:focus { border-color: var(--green); box-shadow: 2px 2px 0 var(--green); }
+
+  .btn-add {
+    background: var(--blue); color: white;
+    border: 2px solid var(--ink); border-radius: 7px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1px; padding: 9px 16px;
+    cursor: pointer; box-shadow: var(--shadow);
+    transition: all 0.1s; white-space: nowrap;
+  }
+  .btn-add:hover { background: #046fab; transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+  .btn-add:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+
+  /* ── EVIDENCE LOG ── */
+  .ev-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 8px;
+  }
+  .ev-header h3 {
+    font-family: 'Space Mono', monospace; font-weight: 700;
+    font-size: 8px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--ink);
+    white-space: nowrap;
+  }
+  .ev-header::after {
+    content: ''; flex: 1;
+    height: 2px; background: var(--ink); border-radius: 1px;
+  }
+
+  .ev-table {
+    width: 100%; border-collapse: separate;
+    border-spacing: 0;
+    border: 2px solid var(--ink);
+    border-radius: 8px; overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .ev-table th:first-child { border-radius: 6px 0 0 0; }
+  .ev-table th:last-child  { border-radius: 0 6px 0 0; }
+  .ev-table th {
+    font-family: 'Space Mono', monospace; font-weight: 700;
+    font-size: 7px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--mid);
+    padding: 8px 8px; text-align: left;
+    border-bottom: 2px solid var(--ink);
+    background: var(--cream); font-weight: 700;
+  }
+  .ev-table td {
+    padding: 9px 7px;
+    border-bottom: 1px solid rgba(26,23,20,0.1);
+    vertical-align: middle;
+    font-size: 11px; background: white;
+  }
+  .ev-table tr:last-child td { border-bottom: none; }
+
+  .returned-row td { color: #b0a898; background: #f5f3f0; }
+  .returned-row .count-num { color: #b0a898; }
+
+  .count-num {
+    font-family: 'VT323', monospace;
+    font-size: 24px; color: var(--red); line-height: 1;
+  }
+
+  .status-badge {
+    display: inline-block;
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 4px;
+    border: 1.5px solid var(--ink);
+    white-space: nowrap;
+  }
+  .status-badge.stolen  { background: #fff0ee; color: var(--red); }
+  .status-badge.safe    { background: #f0fff8; color: var(--green); }
+  .status-badge.returned{ background: #f0f0f0; color: var(--mid); }
+
+  .action-cell {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-action {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 0.5px; padding: 4px 10px;
+    border-radius: 20px; border: 2px solid var(--ink);
+    cursor: pointer; box-shadow: 2px 2px 0 var(--ink);
+    transition: all 0.1s; white-space: nowrap;
+  }
+  .btn-action:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn-stolen-act { background: var(--red); color: white; }
+  .btn-return-act { background: var(--green); color: white; }
+
+  .btn-del {
+    background: var(--cream);
+    border: 1.5px solid var(--ink); border-radius: 5px;
+    width: 24px; height: 24px; font-size: 9px;
+    cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    box-shadow: 1px 1px 0 var(--ink); transition: all 0.1s;
+  }
+  .btn-del:hover { background: var(--red); color: white; }
+
+  .empty-td {
+    text-align: center; padding: 20px;
+    font-family: 'VT323', monospace;
+    font-size: 18px; color: var(--mid);
+    background: white !important;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: var(--ink); color: white;
+    padding: 9px 18px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; font-weight: 700; letter-spacing: 1px;
+    border: 2px solid var(--red); border-radius: 8px;
+    box-shadow: 3px 3px 0 var(--red);
+    z-index: 200;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.toast-stolen  { border-color: var(--red);   box-shadow: 3px 3px 0 var(--red); }
+  .toast.toast-returned{ border-color: var(--green); box-shadow: 3px 3px 0 var(--green); }
+
+  @keyframes popIn {
+    from { opacity:0; transform:translateY(16px) scale(0.97); }
+    to   { opacity:1; transform:translateY(0) scale(1); }
+  }
+  input[type="file"] { display: none; }
+</style>
+</head>
+<body>
+
+<div class="window">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="win-dot" style="background:#FD5A46"></div>
+      <div class="win-dot" style="background:#FFC567"></div>
+      <div class="win-dot" style="background:rgba(255,255,255,0.5)"></div>
+      <div class="top-bar-title">clothes-theft-unit.exe</div>
+    </div>
+    <div class="top-badge">WANTED 🚨</div>
+  </div>
+
+  <div class="page">
+
+    <!-- TITLE -->
+    <div class="title-block">
+      <div class="title-text">
+        <div class="title-eyebrow">▶ CASE FILE — ACTIVE INVESTIGATION</div>
+        <div class="title-main">CLOTHES <span class="highlight">THEFT</span> UNIT</div>
+        <div class="title-sub">INVESTIGATION DIVISION · EST. 2026</div>
+      </div>
+    </div>
+
+    <!-- MUGSHOT ROW -->
+    <div class="mugshot-row">
+      <div class="photo-box" onclick="document.getElementById('mugshotInput').click()">
+        <div class="photo-ph" id="mugshotPh">SUBJECT<br>PHOTO<br>📸</div>
+        <img id="mugshotImg" alt="mugshot">
+        <div class="photo-label">MUGSHOT</div>
+      </div>
+      <input type="file" id="mugshotInput" accept="image/*" onchange="loadMugshot(event)">
+
+      <div class="meta-card">
+        <div class="meta-row">
+          <span class="meta-key">File No.</span>
+          <span class="meta-val">#SISTER-001</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-key">Status</span>
+          <span class="meta-val danger">WANTED</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-key">Date</span>
+          <span class="meta-val" id="fileDate"></span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-key">Subject</span>
+          <span class="meta-val"
+            id="subjectName"
+            contenteditable="true"
+            style="outline:none;border-bottom:1.5px dashed rgba(26,23,20,0.3);min-width:60px;display:inline-block"
+            title="tap to edit">MY SISTER</span>
+        </div>
+        <div class="verdict-box" id="verdictText">
+          gathering evidence. subject unaware of surveillance.
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-box">
+        <span class="stat-num" id="statItems">0</span>
+        <div class="stat-lbl">At Risk</div>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="statStolen">0</span>
+        <div class="stat-lbl">Stolen</div>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="statRate">—</span>
+        <div class="stat-lbl">Returned</div>
+      </div>
+    </div>
+
+    <!-- LOG CARD -->
+    <div class="log-card">
+      <div class="card-title">Log an Item</div>
+      <div class="label-grid-wrap">
+        <div class="label-grid" id="labelGrid">
+          <button class="l-btn sel" data-e="👗">👗 DRESS</button>
+          <button class="l-btn" data-e="👕">👕 TOP</button>
+          <button class="l-btn" data-e="🧥">🧥 JACKET</button>
+          <button class="l-btn" data-e="👖">👖 PANTS</button>
+          <button class="l-btn" data-e="🧢">🧢 CAP</button>
+          <button class="l-btn" data-e="👠">👠 SHOES</button>
+          <button class="l-btn" data-e="👜">👜 BAG</button>
+          <button class="l-btn" data-e="💍">💍 ACC.</button>
+        </div>
+      </div>
+      <div class="add-row">
+        <input type="text" class="text-inp" id="itemInput"
+          placeholder="e.g. my fav white dress..." maxlength="40">
+        <button class="btn-add" onclick="addItem()">+ ADD</button>
+      </div>
+    </div>
+
+    <!-- EVIDENCE LOG -->
+    <div class="ev-header">
+      <h3>Evidence Log</h3>
+    </div>
+    <table class="ev-table">
+      <thead>
+        <tr>
+          <th style="width:30px"></th>
+          <th>Item</th>
+          <th style="width:32px;text-align:center">×</th>
+          <th style="width:100px">Action</th>
+          <th style="width:28px"></th>
+        </tr>
+      </thead>
+      <tbody id="evBody">
+        <tr><td colspan="5" class="empty-td">no items logged yet. stay vigilant.</td></tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let items = JSON.parse(localStorage.getItem('ctiu_v3_items') || '[]');
+let selectedEmoji = '👗';
+
+document.getElementById('fileDate').textContent =
+  new Date().toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'});
+
+const savedMug = localStorage.getItem('ctiu_v3_mugshot');
+if (savedMug) showMugshot(savedMug);
+const savedName = localStorage.getItem('ctiu_v3_name');
+if (savedName) document.getElementById('subjectName').textContent = savedName;
+
+document.getElementById('subjectName').addEventListener('blur', e => {
+  localStorage.setItem('ctiu_v3_name', e.target.textContent.trim());
+});
+
+function loadMugshot(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = ev => { localStorage.setItem('ctiu_v3_mugshot', ev.target.result); showMugshot(ev.target.result); };
+  r.readAsDataURL(file);
+}
+function showMugshot(src) {
+  document.getElementById('mugshotImg').src = src;
+  document.getElementById('mugshotImg').style.display = 'block';
+  document.getElementById('mugshotPh').style.display = 'none';
+}
+
+document.getElementById('labelGrid').addEventListener('click', e => {
+  const btn = e.target.closest('.l-btn'); if (!btn) return;
+  document.querySelectorAll('.l-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  selectedEmoji = btn.dataset.e;
+});
+
+function save() { localStorage.setItem('ctiu_v3_items', JSON.stringify(items)); }
+
+function addItem() {
+  const inp = document.getElementById('itemInput');
+  const name = inp.value.trim();
+  if (!name) {
+    inp.style.borderColor = '#FD5A46';
+    setTimeout(() => inp.style.borderColor = 'var(--ink)', 500);
+    return;
+  }
+  items.push({ id: Date.now(), emoji: selectedEmoji, name, stolen: 0, returned: 0, status: 'safe' });
+  save(); inp.value = ''; render();
+  showToast(`"${name}" filed 🗂️`);
+}
+
+function stolen(id) {
+  const it = items.find(i => i.id === id); if (!it) return;
+  it.stolen++; it.status = 'stolen'; save(); render();
+  const msgs = ['offense recorded. 😤', 'caught red-handed. 🚨', 'criminal. again.', 'unbelievable.'];
+  showToast(msgs[Math.floor(Math.random() * msgs.length)], 'stolen');
+}
+function returned(id) {
+  const it = items.find(i => i.id === id); if (!it) return;
+  it.returned++; it.status = 'returned'; save(); render();
+  showToast('returned. for now. 👀', 'returned');
+}
+function deleteItem(id) {
+  items = items.filter(i => i.id !== id); save(); render();
+  showToast('removed from file.');
+}
+
+function getVerdict(n) {
+  if (n === 0) return "gathering evidence. subject unaware of surveillance.";
+  if (n < 5)  return `${n} offense(s) on record. she thinks she's slick.`;
+  if (n < 12) return `${n} times stolen. this is a pattern. this is a lifestyle.`;
+  if (n < 20) return `${n} counts. she owes you a full shopping spree.`;
+  return `${n} documented thefts. wardrobe lock recommended.`;
+}
+
+function render() {
+  const ts = items.reduce((a, i) => a + i.stolen, 0);
+  const tr = items.reduce((a, i) => a + i.returned, 0);
+  document.getElementById('statItems').textContent  = items.length;
+  document.getElementById('statStolen').textContent = ts;
+  document.getElementById('statRate').textContent   = ts === 0 ? '—' : Math.round((tr / ts) * 100) + '%';
+  document.getElementById('verdictText').textContent = getVerdict(ts);
+
+  const tbody = document.getElementById('evBody');
+  if (!items.length) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-td">no items logged yet. stay vigilant.</td></tr>';
+    return;
+  }
+
+  const sorted = [...items].sort((a, b) =>
+    ({ stolen: 0, safe: 1, returned: 2 }[a.status] ?? 1) -
+    ({ stolen: 0, safe: 1, returned: 2 }[b.status] ?? 1)
+  );
+
+  tbody.innerHTML = sorted.map(it => `
+    <tr class="${it.status === 'returned' ? 'returned-row' : ''}">
+      <td style="font-size:18px;text-align:center;padding:7px 4px">${it.emoji}</td>
+      <td>
+        <div style="font-weight:700;font-size:11px">${it.name}</div>
+        ${it.stolen > 0 ? `<div style="font-size:9px;color:var(--mid);margin-top:2px">stolen ${it.stolen}×</div>` : ''}
+      </td>
+      <td style="text-align:center">
+        <span class="count-num">${it.stolen > 0 ? it.stolen : ''}</span>
+      </td>
+      <td>
+        ${it.status === 'stolen'
+          ? `<button class="btn-action btn-return-act" onclick="returned(${it.id})">RETURNED</button>`
+          : `<button class="btn-action btn-stolen-act" onclick="stolen(${it.id})">STOLEN</button>`
+        }
+      </td>
+      <td>
+        <button class="btn-del" onclick="deleteItem(${it.id})">✕</button>
+      </td>
+    </tr>`).join('');
+}
+
+function showToast(msg, type='stolen') {
+  const t = document.getElementById('toast');
+  t.classList.remove('show', 'toast-stolen', 'toast-returned');
+  void t.offsetWidth; // force reflow so animation retriggers
+  t.textContent = msg;
+  t.classList.add('show', `toast-${type}`);
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+document.getElementById('itemInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addItem();
+});
+render();
+</script>
+</body>
+</html>
