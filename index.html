@@ -582,7 +582,26 @@ document.getElementById('subjectName').addEventListener('blur', e => {
 function loadMugshot(e) {
   const file = e.target.files[0]; if (!file) return;
   const r = new FileReader();
-  r.onload = ev => { localStorage.setItem('ctiu_v3_mugshot', ev.target.result); showMugshot(ev.target.result); };
+  r.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      // compress to max 200x200px, quality 0.6
+      const canvas = document.createElement('canvas');
+      const max = 200;
+      const ratio = Math.min(max / img.width, max / img.height);
+      canvas.width  = img.width  * ratio;
+      canvas.height = img.height * ratio;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      const compressed = canvas.toDataURL('image/jpeg', 0.6);
+      try {
+        localStorage.setItem('ctiu_v3_mugshot', compressed);
+      } catch(err) {
+        console.warn('localStorage full, photo in memory only');
+      }
+      showMugshot(compressed);
+    };
+    img.src = ev.target.result;
+  };
   r.readAsDataURL(file);
 }
 function showMugshot(src) {
