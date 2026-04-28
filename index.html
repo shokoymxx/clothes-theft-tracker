@@ -485,7 +485,11 @@
         </div>
         <div class="meta-row">
           <span class="meta-key">Date</span>
-          <span class="meta-val" id="fileDate"></span>
+          <span class="meta-val"
+            id="fileDate"
+            contenteditable="true"
+            style="outline:none;border-bottom:1.5px dashed rgba(26,23,20,0.3);min-width:60px;display:inline-block"
+            title="tap to edit"></span>
         </div>
         <div class="meta-row">
           <span class="meta-key">Subject</span>
@@ -567,7 +571,8 @@
 let items = JSON.parse(localStorage.getItem('ctiu_v3_items') || '[]');
 let selectedEmoji = '👗';
 
-document.getElementById('fileDate').textContent =
+const savedDate = localStorage.getItem('ctiu_v3_date');
+document.getElementById('fileDate').textContent = savedDate ||
   new Date().toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'numeric'});
 
 const savedMug = localStorage.getItem('ctiu_v3_mugshot');
@@ -577,6 +582,10 @@ if (savedName) document.getElementById('subjectName').textContent = savedName;
 
 document.getElementById('subjectName').addEventListener('blur', e => {
   localStorage.setItem('ctiu_v3_name', e.target.textContent.trim());
+});
+
+document.getElementById('fileDate').addEventListener('blur', e => {
+  localStorage.setItem('ctiu_v3_date', e.target.textContent.trim());
 });
 
 function loadMugshot(e) {
